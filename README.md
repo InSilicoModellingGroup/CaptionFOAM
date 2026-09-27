@@ -2,15 +2,12 @@
 
 ![Discharge simulation](docs/logo-banner.png)
 
-
 ## Description
 **captionFOAM** is an extension of OpenFOAM for the finite-volume modelling of cold atmospheric plasmas (CAPs). It extends OpenFOAM with custom libraries and solvers for low-temperature plasma discharges, solving the coupled drift-diffusion transport equations for charged species, Poisson's equation for the electric field. Transport coefficients and reaction rates are obtained as functions of either the reduced electric field E/N (LFA - Local Field Approximation) or the mean electron energy $\varepsilon_m$ (LMEA - Local Mean Energy Approximation).
 
 A dedicated Python-based preprocessing toolkit provides built-in coupling with the BOLSIG+ freeware. The toolkit downloads BOLSIG+, utilises reaction cross-section data from the LXCat database, executes BOLSIG+, parses its output, and generates OpenFOAM-compatible lookup tables in a user-friendly way, ensuring consistency between the kinetic data and the solver inputs.
 
-
 captionFOAM currently provides two standalone solvers, addressing different levels of complexity and accuracy in describing the plasma:
-
 
 1. `plasmaReactingFoam` — a detailed chemistry solver that resolves multi-species transport coupled with Poisson's equation, enabling the simulation of discharge propagation and reactive species formation.
 2. `threeSpeciesFoam` — a reduced three-species model (electrons, positive ions, negative ions), designed for computational efficiency and robustness.
@@ -48,13 +45,13 @@ A classical 2D axisymmetric pin-to-plate configuration using air chemistry, oper
 captionFOAM is released under the GNU General Public License v3.0 (GPL-3.0).
 
 ## Acknowledgements
-This work was partially funded by the European Union's Horizon 2020 research and innovation programme under the Marie Skłodowska-Curie Action (Grant Agreement 101034403), the Horizon-EIC-2023 Pathfinder Open (Grant Agreement 101129853), and UKRI (Grant Agreement 10106237).
+This work was partially financially supported by the EU H2020 research and innovation programme under the Marie Skłodowska-Curie Action (Grant Agreement 101034403), the Horizon EIC Pathfinder Open project IgnitePLASMA (Grant Agreement 101129853), and UKRI (Grant Agreement 10106237).
 
 ## Developers
 captionFOAM is developed by the [In Silico Modelling Group](https://in-silico-modelling.ucy.ac.cy/) at the University of Cyprus.
 
-- Core developer: — [George Vafakos](https://github.com/GeorgeVafakos)
-- Supervision: — [Vasileios Vavourakis](https://github.com/vasvav), [Pambos Anastassiou](https://github.com/pambosana)
+- Core developer: [George Vafakos](https://github.com/GeorgeVafakos)
+- Supervision: [Vasileios Vavourakis](https://github.com/vasvav), [Charalambos Anastassiou](https://github.com/pambosana)
 
 <!-- ## Citation -->
 
