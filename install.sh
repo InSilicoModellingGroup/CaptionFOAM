@@ -22,11 +22,11 @@ source "$CAPTIONFOAM_BASHRC"
 # Add to ~/.bashrc if not already there
 if ! grep -q "$CAPTIONFOAM_BASHRC" "$HOME/.bashrc"; then
     echo "" >> "$HOME/.bashrc"
-    echo "# captionFOAM environment" >> "$HOME/.bashrc"
+    echo "# CaptionFOAM environment" >> "$HOME/.bashrc"
     echo "source $CAPTIONFOAM_BASHRC" >> "$HOME/.bashrc"
-    echo "Added captionFOAM to ~/.bashrc"
+    echo "Added CaptionFOAM to ~/.bashrc"
 else
-    echo "captionFOAM already in ~/.bashrc"
+    echo "CaptionFOAM already in ~/.bashrc"
 fi
 
 # Compile libraries and solvers

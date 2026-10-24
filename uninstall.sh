@@ -6,11 +6,11 @@ CAPTIONFOAM_BASHRC="$PWD/etc/bashrc"
 
 # Remove from ~/.bashrc
 if grep -q "$CAPTIONFOAM_BASHRC" "$HOME/.bashrc"; then
-    sed -i "\|# captionFOAM environment|d" "$HOME/.bashrc"
+    sed -i "\|# CaptionFOAM environment|d" "$HOME/.bashrc"
     sed -i "\|$CAPTIONFOAM_BASHRC|d" "$HOME/.bashrc"
-    echo "Removed captionFOAM from ~/.bashrc"
+    echo "Removed CaptionFOAM from ~/.bashrc"
 else
-    echo "captionFOAM not found in ~/.bashrc"
+    echo "CaptionFOAM not found in ~/.bashrc"
 fi
 
 # Clean libraries and solvers
