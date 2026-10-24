@@ -1,4 +1,4 @@
-# captionFOAM
+# CaptionFOAM
 
 ![Discharge simulation](docs/logo-banner.png)
 
