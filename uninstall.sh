@@ -20,5 +20,6 @@ wclean all applications/solvers
 # Unset environment variables
 unset CAPTIONFOAM_DIR
 unset CAPTIONFOAM_SRC
+unset CAPTIONFOAM_UTILITIES
 
 #------------------------------------------------------------------------------

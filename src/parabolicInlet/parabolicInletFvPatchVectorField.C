@@ -215,9 +215,14 @@ void Foam::parabolicInletFvPatchVectorField::updateCoeffs()
 
 
     const vectorField r(patch().Cf() - center_);
-
-    fixedValueFvPatchVectorField::operator==( 2.0*Um_*(1.0-sqr(mag(r)/max(mag(r)))) );
+    
+    // fixedValueFvPatchVectorField::operator==( 2.0*Um_*(1.0-sqr(mag(r)/max(mag(r)))) );
     // fixedValueFvPatchVectorField::operator==( 2.0*Um_*(1.0-sqr(mag(r)/R_)) );
+    const scalarField magR(mag(patch().Cf() - center_));
+    fixedValueFvPatchVectorField::operator==
+    (
+        2.0*Um_*(1.0 - sqr(magR/gMax(magR)))   // was max(): local to each processor
+    );
 
     fixedValueFvPatchVectorField::updateCoeffs();
 }
@@ -231,6 +236,7 @@ void Foam::parabolicInletFvPatchVectorField::write
     fvPatchVectorField::write(os);
     os.writeEntry("meanVelocity", Um_);
     os.writeEntry("center", center_);
+    fvPatchVectorField::writeValueEntry(os);
 
     // fvPatchVectorField::write(os);
     // os.writeEntry("scalarData", scalarData_);

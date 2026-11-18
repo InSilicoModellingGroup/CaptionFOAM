@@ -7,15 +7,13 @@ inputFile = 'input.txt'
 # Define current path
 currenPath = os.path.dirname(os.path.abspath(__file__))
 
-# Define project root path
-projectRootPath = currenPath
-while projectRootPath != os.path.dirname(projectRootPath):
-    projectRootPath = os.path.abspath(os.path.join(projectRootPath, '..'))
-    if os.path.exists(os.path.join(projectRootPath, 'src')):
-        break
+# Define CaptionFOAM utilities path (exported by CaptionFOAM's etc/bashrc)
+utilitiesPath = os.environ.get('CAPTIONFOAM_UTILITIES')
+if not utilitiesPath:
+    sys.exit("Error: CAPTIONFOAM_UTILITIES not set. Source CaptionFOAM's etc/bashrc first.")
 
 # Define src and runBolsig paths
-bolsigPath = os.path.abspath(os.path.join(projectRootPath, 'applications', 'utilities', 'bolsig'))
+bolsigPath = os.path.abspath(os.path.join(utilitiesPath, 'bolsig'))
 LXCatPath = os.path.abspath(os.path.join(bolsigPath, 'LXCatData'))
 runBolsigPath = os.path.abspath(os.path.join(bolsigPath, 'runBolsig'))
 

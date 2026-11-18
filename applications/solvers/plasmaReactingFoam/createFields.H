@@ -693,24 +693,24 @@ surfaceScalarField sigmaFlux
     dimensionedScalar("zero", dimensionSet(0, -2, 0, 0, 0, 1, 0), scalar(0))
 );
 
-// // Read mass fractions of neutral species if exist
-// if (composition.species().find("He") >= 0)
-// {
-//     Info<< "Reading field YHe\n" << endl;
-//     volScalarField YHe
-//     (
-//         IOobject
-//         (
-//             "YHe",
-//             runTime.timeName(),
-//             mesh,
-//             IOobject::MUST_READ,
-//             IOobject::NO_WRITE
-//         ),
-//         mesh
-//     );
-//     N[composition.species().find("He")] = YHe*NGas;
-// }
+// Read mass fractions of neutral species if exist
+if (composition.species().find("He") >= 0)
+{
+    Info<< "Reading field YHe\n" << endl;
+    volScalarField YHe
+    (
+        IOobject
+        (
+            "YHe",
+            runTime.timeName(),
+            mesh,
+            IOobject::MUST_READ,
+            IOobject::NO_WRITE
+        ),
+        mesh
+    );
+    N[composition.species().find("He")] = YHe*NGas;
+}
 
 if (composition.species().find("N2") >= 0)
 {
