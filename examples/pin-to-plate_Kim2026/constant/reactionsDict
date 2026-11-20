@@ -1,0 +1,110 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2406                                  |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      reactionsDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+species
+(
+    e
+    N2
+    N2_plus
+    N2_A3Su
+    N2_B3Pg
+    N2_C3Pu
+    N2_a1Su
+    O2
+    O2_plus
+    O
+    O_minus
+    O_1D
+);
+
+inertSpecie N2;
+
+reactions
+{
+    // * * * * * * * * * * * * * Electron impact (BOLSIG+) * * * * * * * * * //
+    R1
+    {
+        reaction    "e + N2 = 2 e + N2_plus";
+        type        bolsig;
+    }
+
+    R3a
+    {
+        reaction    "e + N2 = 2 e + N2_A3Su";
+        type        bolsig;
+    }
+
+    R3b
+    {
+        reaction    "e + N2 = 2 e + N2_A3Su";
+        type        bolsig;
+    }
+
+    R3c
+    {
+        reaction    "e + N2 = 2 e + N2_A3Su";
+        type        bolsig;
+    }
+
+    R4
+    {
+        reaction    "e + N2 = e + N2_B3Pg";
+        type        bolsig;
+    }
+
+    R5
+    {
+        reaction    "e + N2 = e + N2_C3Pu";
+        type        bolsig;
+    }
+
+    R6
+    {
+        reaction    "e + N2 = e + N2_a1Su";
+        type        bolsig;
+    }
+
+    R62
+    {
+        reaction    "e + N2 = e + 2 N";
+        type        bolsig;
+    }
+
+    R2
+    {
+        reaction    "e + O2 = e + O2_plus";
+        type        bolsig;
+    }
+
+    R7
+    {
+        reaction    "e + O2 = e + 2 O";
+        type        bolsig;
+    }
+
+    R8
+    {
+        reaction    "e + O2 = e + O + O_1D";
+        type        bolsig;
+    }
+
+    R10
+    {
+        reaction    "e + O2 = O_minus + O";
+        type        bolsig;
+    }
+
+// ************************************************************************* //

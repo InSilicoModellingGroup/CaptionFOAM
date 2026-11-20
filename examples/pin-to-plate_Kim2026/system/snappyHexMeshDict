@@ -1,0 +1,146 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  v2406                                 |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      snappyHexMeshDict;
+}
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+castellatedMesh true;
+snap            true;
+addLayers       true;
+
+geometry
+{
+    electrode
+    {
+        type triSurfaceMesh;
+        file "electrode.stl";
+    }
+
+}
+
+
+castellatedMeshControls
+{
+
+    maxLocalCells 100000;
+
+    maxGlobalCells 2000000;
+
+    minRefinementCells 0;
+
+    nCellsBetweenLevels 5;
+
+    maxLoadUnbalance 0.10;
+
+    features
+    (
+        {
+            file "electrode.eMesh";
+            level 0;
+        }
+    );
+
+    resolveFeatureAngle 30;
+
+    refinementSurfaces
+    {
+        electrode
+        {
+            level (0 0);
+            patchInfo
+            {
+                type wall;
+            }
+        }
+    }
+
+    refinementRegions
+    {
+    }
+
+    locationInMesh (0 1e-3 1e-3); // Inside point
+
+    allowFreeStandingZoneFaces true;
+}
+
+// Settings for the snapping.
+snapControls
+{
+
+    nSmoothPatch 5;
+
+    tolerance 1;
+
+    nSolveIter 30;
+
+    nRelaxIter 15;
+
+    nFeatureSnapIter 10;
+
+    implicitFeatureSnap false;
+
+    explicitFeatureSnap true;
+
+    multiRegionFeatureSnap false;
+}
+
+// Settings for the layer addition.
+addLayersControls
+{
+    relativeSizes true;
+    layers
+    {
+        electrode 
+        { 
+            nSurfaceLayers 8; 
+        }
+    }
+    expansionRatio 1.2;        // was 1.0
+    finalLayerThickness 0.5;   // was 1.0
+    minThickness       0.1;
+    nGrow 0;
+    featureAngle 30;
+    nRelaxIter 10;
+    nSmoothSurfaceNormals 5;   // was 1
+    nSmoothNormals 5;          // was 3
+    nSmoothThickness 10;
+    maxFaceThicknessRatio     2.0;
+    maxThicknessToMedialRatio 0.7;  // was 2.0
+    minMedialAxisAngle 90;
+    nBufferCellsNoExtrude 0;
+    nLayerIter 80;
+    nRelaxedIter 20;
+}
+
+meshQualityControls
+{
+    #include "meshQualityDict"
+
+    relaxed
+    {
+        maxNonOrtho 75;
+    }
+}
+
+writeFlags
+(
+    scalarLevels
+    layerSets
+    layerFields
+);
+
+mergeTolerance 1E-12;
+
+
+// ************************************************************************* //

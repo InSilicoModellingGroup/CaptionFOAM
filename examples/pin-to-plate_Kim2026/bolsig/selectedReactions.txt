@@ -1,0 +1,20 @@
+The selected reactions for BOLSIG+ are:
+
+ID     Reaction                                         Energy       Database        File      
+==     ========                                         ======       ========        ====      
+1      E + N2 -> E + N2, Effective                      --           IST-Lisbon      ./LXCatData/N2/R1.txt
+25     E + N2 -> E + E + N2+(X), Ionization             15.6         IST-Lisbon      ./LXCatData/N2/R25.txt
+12     E + N2 -> E + N2[A3Su+(v=0-4)], Excitation       6.2          IST-Lisbon      ./LXCatData/N2/R12.txt
+13     E + N2 -> E + N2 [A3Su+(v=5-9)], Excitation      7            IST-Lisbon      ./LXCatData/N2/R13.txt
+16     E + N2 -> E + N2 [A3Su+(v=10+)], Excitation      7.8          IST-Lisbon      ./LXCatData/N2/R16.txt
+14     E + N2 -> E + N2(B3Pg), Excitation               7.4          IST-Lisbon      ./LXCatData/N2/R14.txt
+21     E + N2 -> E + N2(C3Pu), Excitation               11           IST-Lisbon      ./LXCatData/N2/R21.txt
+18     E + N2 -> E + N2(a1Su-), Excitation              8.4          IST-Lisbon      ./LXCatData/N2/R18.txt
+50     E + N2 -> E + N+N(13eV), Excitation              13           Morgan          ./LXCatData/N2/R50.txt
+
+2      E + O2 -> E + O2, Effective                      --           IST-Lisbon      ./LXCatData/O2/R2.txt
+14     E + O2 -> E + E + O2+, Ionization                12.1         IST-Lisbon      ./LXCatData/O2/R14.txt
+10     E + O2 -> E + O(3P)+O(3P), Excitation            6            IST-Lisbon      ./LXCatData/O2/R10.txt
+11     E + O2 -> E + O(3P)+O(1D), Excitation            8.4          IST-Lisbon      ./LXCatData/O2/R11.txt
+32     E + O2 -> O-+O, Attachment                       0            Itikawa         ./LXCatData/O2/R32.txt
+

@@ -1,0 +1,655 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2406                                  |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      reactionsDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+species
+(
+    e
+    N2
+    O2
+    N2_plus
+    O2_plus
+    N4_plus
+    O4_plus
+    O2_plusN2
+    O_minus
+    O2_minus
+    O
+    O3
+    N
+    NO
+    O_1D
+    N2_A3Su
+    N2_B3Pg
+    N2_C3Pu
+    N2_a1Su
+);
+
+inertSpecie N2;
+
+// Code shared by the coded reactions R15-R21 (name powerLawTe):
+// k = A (300/Te)^n. The electron temperature is not allowed below the gas
+// temperature: where the electron energy is not resolved it can be lower, or
+// negative, and the power would then fail (floating-point exception).
+powerLawTeCode
+#{
+    return A*pow(300/max(Te, T), n);
+#};
+
+
+reactions
+{
+    // * * * * * * * * * * * * * Electron impact (BOLSIG+) * * * * * * * * * //
+    R1
+    {
+        reaction    "e + N2 = 2 e + N2_plus";
+        type        bolsig;
+    }
+
+    R3a
+    {
+        reaction    "e + N2 = 2 e + N2_A3Su";
+        type        bolsig;
+    }
+
+    R3b
+    {
+        reaction    "e + N2 = 2 e + N2_A3Su";
+        type        bolsig;
+    }
+
+    R3c
+    {
+        reaction    "e + N2 = 2 e + N2_A3Su";
+        type        bolsig;
+    }
+
+    R4
+    {
+        reaction    "e + N2 = e + N2_B3Pg";
+        type        bolsig;
+    }
+
+    R5
+    {
+        reaction    "e + N2 = e + N2_C3Pu";
+        type        bolsig;
+    }
+
+    R6
+    {
+        reaction    "e + N2 = e + N2_a1Su";
+        type        bolsig;
+    }
+
+    R2
+    {
+        reaction    "e + O2 = e + O2_plus";
+        type        bolsig;
+    }
+
+    R7
+    {
+        reaction    "e + O2 = e + 2 O";
+        type        bolsig;
+    }
+
+    R8
+    {
+        reaction    "e + O2 = e + O + O_1D";
+        type        bolsig;
+    }
+
+    R10
+    {
+        reaction    "e + O2 = O_minus + O";
+        type        bolsig;
+    }
+
+
+
+
+    // * * * * * * * * * * * * * * * * Detachment * * * * * * * * * * * * * //
+
+    // O2- + O2 -> e + O2 + O2, k = 8.6e-16 exp(-6030/T) (1 - exp(-1570/T)) [14]
+    R12
+    {
+        reaction    "O2_minus + O2 = e + 2 O2";
+        type        coded;
+        constant    true;       // gas temperature only
+
+        fields      { T TGas; }
+        coeffs      { A 8.6e-16; B 6030; C 1570; }
+
+        code
+        #{
+            return A*exp(-B/T)*(1 - exp(-C/T));
+        #};
+    }
+
+    // O- + O -> O2 + e, k = 5e-16 [7]
+    R13
+    {
+        reaction    "O_minus + O = O2 + e";
+        type        constantRate;
+        value       5e-16;
+    }
+
+    // O2- + O -> O3 + e, k = 1.5e-16 [7]
+    R14
+    {
+        reaction    "O2_minus + O = O3 + e";
+        type        constantRate;
+        value       1.5e-16;
+    }
+
+
+    // * * * * * * * * * * * * Electron-ion recombination * * * * * * * * * //
+    // k = A (300/Te)^n, code powerLawTeCode above
+
+    // N4+ + e -> N2 + N2, k = 2.0e-12 (300/Te)^0.5 [7]
+    R15
+    {
+        reaction    "N4_plus + e = 2 N2";
+        type        coded;
+        name        powerLawTe;
+        fields      { Te TEle_K; T TGas; }
+        coeffs      { A 2.0e-12; n 0.5; }
+        code        $powerLawTeCode;
+    }
+
+    // O4+ + e -> O2 + O2, k = 4.2e-12 (300/Te)^0.48 [34]
+    R16
+    {
+        reaction    "O4_plus + e = 2 O2";
+        type        coded;
+        name        powerLawTe;
+        fields      { Te TEle_K; T TGas; }
+        coeffs      { A 4.2e-12; n 0.48; }
+        code        $powerLawTeCode;
+    }
+
+    // O2+N2 + e -> O2 + N2, k = 1.3e-12 (300/Te)^0.5 [7]
+    R17
+    {
+        reaction    "O2_plusN2 + e = O2 + N2";
+        type        coded;
+        name        powerLawTe;
+        fields      { Te TEle_K; T TGas; }
+        coeffs      { A 1.3e-12; n 0.5; }
+        code        $powerLawTeCode;
+    }
+
+    // N2+ + e -> N + N, k = 2.8e-13 (300/Te)^0.5 [7]
+    R18
+    {
+        reaction    "N2_plus + e = 2 N";
+        type        coded;
+        name        powerLawTe;
+        fields      { Te TEle_K; T TGas; }
+        coeffs      { A 2.8e-13; n 0.5; }
+        code        $powerLawTeCode;
+    }
+
+    // O2+ + e -> O + O, k = 6e-11 Te^-1 = (6e-11/300) (300/Te) [35]
+    R19
+    {
+        reaction    "O2_plus + e = 2 O";
+        type        coded;
+        name        powerLawTe;
+        fields      { Te TEle_K; T TGas; }
+        coeffs      { A #eval{ 6e-11/300 }; n 1; }
+        code        $powerLawTeCode;
+    }
+
+    // N2+ + e + e -> N2 + e, k = 1.0e-31 (300/Te)^4.5 [8]
+    // Table 5 prints 1.0e-13, 1e18 times the usual 1e-31 m^6/s
+    // (1e-19 cm^6/s) of this three-body recombination
+    R20
+    {
+        reaction    "N2_plus + 2 e = N2 + e";
+        type        coded;
+        name        powerLawTe;
+        fields      { Te TEle_K; T TGas; }
+        coeffs      { A 1.0e-31; n 4.5; }
+        code        $powerLawTeCode;
+    }
+
+    // O2+ + e + e -> O2 + e, k = 1.0e-31 (300/Te)^4.5 [8], as R20
+    R21
+    {
+        reaction    "O2_plus + 2 e = O2 + e";
+        type        coded;
+        name        powerLawTe;
+        fields      { Te TEle_K; T TGas; }
+        coeffs      { A 1.0e-31; n 4.5; }
+        code        $powerLawTeCode;
+    }
+
+
+    // * * * * * * * * * * * * * Ion-ion recombination * * * * * * * * * * * //
+
+    // O- + O2+ -> O + O2, k = 3.46e-12 T^-0.5 [35]
+    R22
+    {
+        reaction    "O_minus + O2_plus = O + O2";
+        type        ArrheniusLaw;
+        field       TGas;
+        A           3.46e-12;
+        B           -0.5;
+        C           0;
+        constant    true;
+    }
+
+    // O2- + N2+ -> O2 + N2, k = 3.46e-12 T^-0.5 [35]
+    R23
+    {
+        reaction    "O2_minus + N2_plus = O2 + N2";
+        type        ArrheniusLaw;
+        field       TGas;
+        A           3.46e-12;
+        B           -0.5;
+        C           0;
+        constant    true;
+    }
+
+    // O2- + O2+ -> O2 + O2, k = 3.46e-12 T^-0.5 [35]
+    R24
+    {
+        reaction    "O2_minus + O2_plus = 2 O2";
+        type        ArrheniusLaw;
+        field       TGas;
+        A           3.46e-12;
+        B           -0.5;
+        C           0;
+        constant    true;
+    }
+
+    // O2- + O4+ -> O2 + O2 + O2, k = 1e-13 [7]
+    R25
+    {
+        reaction    "O2_minus + O4_plus = 3 O2";
+        type        constantRate;
+        value       1e-13;
+    }
+
+    // O2- + O2+ -> O2 + O + O, k = 1e-13 [7]
+    R26
+    {
+        reaction    "O2_minus + O2_plus = O2 + 2 O";
+        type        constantRate;
+        value       1e-13;
+    }
+
+    // O2- + O2+ + N2 -> O2 + O2 + N2, k = 2.0e-37 (300/T)^2.5 [35]
+    R27
+    {
+        reaction    "O2_minus + O2_plus + N2 = 2 O2 + N2";
+        type        ArrheniusLaw;
+        field       TGas;
+        A           #eval{ 2.0e-37*pow(300, 2.5) };
+        B           -2.5;
+        C           0;
+        constant    true;
+    }
+
+    // O2- + O2+ + O2 -> O2 + O2 + O2, k = 2.0e-37 (300/T)^2.5 [35]
+    R28
+    {
+        reaction    "O2_minus + O2_plus + O2 = 3 O2";
+        type        ArrheniusLaw;
+        field       TGas;
+        A           #eval{ 2.0e-37*pow(300, 2.5) };
+        B           -2.5;
+        C           0;
+        constant    true;
+    }
+
+    // O2- + N2+ + N2 -> O2 + N2 + N2, k = 2.0e-37 (300/T)^2.5 [35]
+    // Table 5 prints 2.0e-25, the value in cm^6/s (as R27, R28 in m^6/s)
+    R29
+    {
+        reaction    "O2_minus + N2_plus + N2 = O2 + 2 N2";
+        type        ArrheniusLaw;
+        field       TGas;
+        A           #eval{ 2.0e-37*pow(300, 2.5) };
+        B           -2.5;
+        C           0;
+        constant    true;
+    }
+
+    // O2- + N2+ + O2 -> O2 + N2 + O2, k = 2.0e-37 (300/T)^2.5 [35]
+    // Table 5 prints 2.0e-25, the value in cm^6/s (as R27, R28 in m^6/s)
+    R30
+    {
+        reaction    "O2_minus + N2_plus + O2 = 2 O2 + N2";
+        type        ArrheniusLaw;
+        field       TGas;
+        A           #eval{ 2.0e-37*pow(300, 2.5) };
+        B           -2.5;
+        C           0;
+        constant    true;
+    }
+
+    // O2- + O4+ + N2 -> O2 + O2 + O2 + N2, k = 3.12e-31 T^-2.5 [35]
+    R31
+    {
+        reaction    "O2_minus + O4_plus + N2 = 3 O2 + N2";
+        type        ArrheniusLaw;
+        field       TGas;
+        A           3.12e-31;
+        B           -2.5;
+        C           0;
+        constant    true;
+    }
+
+    // O2- + O4+ + O2 -> O2 + O2 + O2 + O2, k = 3.12e-31 T^-2.5 [35]
+    R32
+    {
+        reaction    "O2_minus + O4_plus + O2 = 4 O2";
+        type        ArrheniusLaw;
+        field       TGas;
+        A           3.12e-31;
+        B           -2.5;
+        C           0;
+        constant    true;
+    }
+
+
+    // * * * * * * * * * * * * Ion conversion and clustering * * * * * * * * //
+
+    // N2+ + 2 N2 -> N4+ + N2, k = 5.0e-41 [7]
+    R33
+    {
+        reaction    "N2_plus + 2 N2 = N4_plus + N2";
+        type        constantRate;
+        value       5.0e-41;
+    }
+
+    // O2+ + 2 O2 -> O4+ + O2, k = 2.4e-42 (300/T)^3.2 [m^6/s]
+    // Table 5 prints this rate for R38 and the rate of R38 here: a
+    // three-body association needs m^6/s, and R60 (the same association
+    // with N2 as third body) gives 2.03e-34 T^-3.2 = 2.4e-42 (300/T)^3.2
+    R34
+    {
+        reaction    "O2_plus + 2 O2 = O4_plus + O2";
+        type        ArrheniusLaw;
+        field       TGas;
+        A           #eval{ 2.4e-42*pow(300, 3.2) };
+        B           -3.2;
+        C           0;
+        constant    true;
+    }
+
+    // O2+ + N2 + N2 -> O2+N2 + N2, k = 8.1e-38 T^-2.0 [35]
+    R35
+    {
+        reaction    "O2_plus + 2 N2 = O2_plusN2 + N2";
+        type        ArrheniusLaw;
+        field       TGas;
+        A           8.1e-38;
+        B           -2.0;
+        C           0;
+        constant    true;
+    }
+
+    // N2+ + O2 -> N2 + O2+, k = 6.0e-17 [35]
+    R36
+    {
+        reaction    "N2_plus + O2 = N2 + O2_plus";
+        type        constantRate;
+        value       6.0e-17;
+    }
+
+    // N4+ + O2 -> O2+ + 2 N2, k = 2.5e-16 [7]
+    R37
+    {
+        reaction    "N4_plus + O2 = O2_plus + 2 N2";
+        type        constantRate;
+        value       2.5e-16;
+    }
+
+    // O4+ + O2 -> O2+ + 2 O2, k = 3.3e-12 (300/T)^4.0 exp(-5030/T) [m^3/s]
+    // Table 5 prints this rate for R34 (see R34)
+    R38
+    {
+        reaction    "O4_plus + O2 = O2_plus + 2 O2";
+        type        ArrheniusLaw;
+        field       TGas;
+        A           #eval{ 3.3e-12*pow(300, 4.0) };
+        B           -4.0;
+        C           -5030;
+        constant    true;
+    }
+
+    // O2+N2 + N2 -> O2+ + N2 + N2, k = 14.8 T^-5.3 exp(-2357/T) [35]
+    R39
+    {
+        reaction    "O2_plusN2 + N2 = O2_plus + 2 N2";
+        type        ArrheniusLaw;
+        field       TGas;
+        A           14.8;
+        B           -5.3;
+        C           -2357;
+        constant    true;
+    }
+
+    // O2+N2 + O2 -> O4+ + N2, k = 1e-15 [35]
+    R40
+    {
+        reaction    "O2_plusN2 + O2 = O4_plus + N2";
+        type        constantRate;
+        value       1e-15;
+    }
+
+
+    // * * * * * * * * * * * * * * Neutral reactions * * * * * * * * * * * * //
+
+    // N + O2 -> NO + O, k = 1.1e-20 T exp(-3150/T) [7]
+    R41
+    {
+        reaction    "N + O2 = NO + O";
+        type        ArrheniusLaw;
+        field       TGas;
+        A           1.1e-20;
+        B           1;
+        C           -3150;
+        constant    true;
+    }
+
+    // N + NO -> N2 + O, k = 1.1e-17 T^0.5 [7], as printed. This is
+    // 1.9e-10 cm^3/s at 300 K, about ten times the usual value for this
+    // reaction: check it against [7] if N and NO matter.
+    R42
+    {
+        reaction    "N + NO = N2 + O";
+        type        ArrheniusLaw;
+        field       TGas;
+        A           1.1e-17;
+        B           0.5;
+        C           0;
+        constant    true;
+    }
+
+    // O + O3 -> O2 + O2, k = 2.0e-17 exp(-2300/T) [7]
+    R43
+    {
+        reaction    "O + O3 = 2 O2";
+        type        ArrheniusLaw;
+        field       TGas;
+        A           2.0e-17;
+        B           0;
+        C           -2300;
+        constant    true;
+    }
+
+    // O + O2 + N2 -> O3 + N2, k = 5.6e-41 T^-2.0 [8]
+    // Table 5 prints 5.6e-21; 5.6e-41 gives the usual 6.2e-34 cm^6/s at 300 K
+    R44
+    {
+        reaction    "O + O2 + N2 = O3 + N2";
+        type        ArrheniusLaw;
+        field       TGas;
+        A           5.6e-41;
+        B           -2.0;
+        C           0;
+        constant    true;
+    }
+
+    // O + O2 + O2 -> O3 + O2, k = 8.6e-43 T^-1.25 [8]
+    // Table 5 prints 8.6e-23; 8.6e-43 gives the usual 6.9e-34 cm^6/s at 300 K
+    R45
+    {
+        reaction    "O + 2 O2 = O3 + O2";
+        type        ArrheniusLaw;
+        field       TGas;
+        A           8.6e-43;
+        B           -1.25;
+        C           0;
+        constant    true;
+    }
+
+
+    // * * * * * * * * * * * Excited states of N2 and O * * * * * * * * * * //
+
+    // N2(A) + O2 -> N2 + O + O, k = 1.7e-18 [8]
+    R46
+    {
+        reaction    "N2_A + O2 = N2 + 2 O";
+        type        constantRate;
+        value       1.7e-18;
+    }
+
+    // N2(A) + O2 -> N2 + O2, k = 7.5e-19 [8]
+    R47
+    {
+        reaction    "N2_A + O2 = N2 + O2";
+        type        constantRate;
+        value       7.5e-19;
+    }
+
+    // N2(A) + N2(A) -> N2 + N2(B), k = 7.7e-17 [8]
+    R48
+    {
+        reaction    "2 N2_A = N2 + N2_B";
+        type        constantRate;
+        value       7.7e-17;
+    }
+
+    // N2(A) + N2(A) -> N2 + N2(C), k = 1.6e-16 [8]
+    R49
+    {
+        reaction    "2 N2_A = N2 + N2_C";
+        type        constantRate;
+        value       1.6e-16;
+    }
+
+    // N2(B) + N2 -> N2(A) + N2, k = 3.0e-17 [34]
+    R50
+    {
+        reaction    "N2_B + N2 = N2_A + N2";
+        type        constantRate;
+        value       3.0e-17;
+    }
+
+    // N2(B) + O2 -> N2 + O + O, k = 3.0e-16 [7]
+    R51
+    {
+        reaction    "N2_B + O2 = N2 + 2 O";
+        type        constantRate;
+        value       3.0e-16;
+    }
+
+    // N2(a') + N2 -> N2(B) + N2, k = 2.0e-19 [7]
+    R52
+    {
+        reaction    "N2_ap + N2 = N2_B + N2";
+        type        constantRate;
+        value       2.0e-19;
+    }
+
+    // N2(a') + O2 -> N2 + O + O(1D), k = 2.8e-17 [7]
+    R53
+    {
+        reaction    "N2_ap + O2 = N2 + O + O_1D";
+        type        constantRate;
+        value       2.8e-17;
+    }
+
+    // N2(C) + N2 -> N2(a') + N2, k = 1.0e-17 [7]
+    R54
+    {
+        reaction    "N2_C + N2 = N2_ap + N2";
+        type        constantRate;
+        value       1.0e-17;
+    }
+
+    // N2(C) -> N2(B), k = 3.0e7 1/s [7]
+    R55
+    {
+        reaction    "N2_C = N2_B";
+        type        constantRate;
+        value       3.0e7;
+    }
+
+    // N2(C) + O2 -> N2 + O + O, k = 3e-16 [7]
+    R56
+    {
+        reaction    "N2_C + O2 = N2 + 2 O";
+        type        constantRate;
+        value       3e-16;
+    }
+
+    // O(1D) + N2 -> O + N2, k = 2.6e-17 [7]
+    R57
+    {
+        reaction    "O_1D + N2 = O + N2";
+        type        constantRate;
+        value       2.6e-17;
+    }
+
+    // O(1D) + O2 -> O + O2, k = 4.0e-17 [34]
+    R58
+    {
+        reaction    "O_1D + O2 = O + O2";
+        type        constantRate;
+        value       4.0e-17;
+    }
+
+
+    // * * * * * * * * * * * * Three-body ion conversion * * * * * * * * * * //
+
+    // N2+ + N2 + O2 -> N4+ + O2, k = 5.0e-41 [35]
+    R59
+    {
+        reaction    "N2_plus + N2 + O2 = N4_plus + O2";
+        type        constantRate;
+        value       5.0e-41;
+    }
+
+    // O2+ + N2 + O2 -> O4+ + N2, k = 2.03e-34 T^-3.2 [35]
+    R60
+    {
+        reaction    "O2_plus + N2 + O2 = O4_plus + N2";
+        type        ArrheniusLaw;
+        field       TGas;
+        A           2.03e-34;
+        B           -3.2;
+        C           0;
+        constant    true;
+    }
+}
+
+// ************************************************************************* //

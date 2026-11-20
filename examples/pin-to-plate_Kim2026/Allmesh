@@ -1,0 +1,38 @@
+#!/bin/bash
+cd "${0%/*}" || exit                                # Run from this directory
+. $WM_PROJECT_DIR/bin/tools/RunFunctions            # Tutorial run functions
+#------------------------------------------------------------------------------
+
+# Delete 0 folder
+rm -r 0
+
+# # Run blockMesh
+blockMesh
+mkdir -p constant/triSurface
+if [ ! -f constant/triSurface/electrode.stl ]
+then
+    gmsh system/electrode.geo -2 -format stl -o constant/triSurface/electrode.stl
+fi
+surfaceFeatureExtract
+
+# Run snappyHexMesh
+nProcs=$(getNumberOfProcessors)
+decomposePar -force
+mpirun -oversubscribe -np $nProcs snappyHexMesh -overwrite -parallel
+reconstructParMesh -constant -mergeTol 1e-12
+rm -rf processor*
+extrudeMesh
+createPatch -overwrite
+
+# Replace 0 directory contents with 0.org
+rm -fvr 0
+cp -r 0.org 0
+
+# Prepare for remote paraview
+paraFoam -touch
+
+# Output message
+echo
+echo Case created.
+
+#------------------------------------------------------------------------------
